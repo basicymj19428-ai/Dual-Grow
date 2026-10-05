@@ -91,7 +91,11 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  uint8_t step = 0;
+  uint32_t last_tick = HAL_GetTick();
 
+  pump1_off();
+  pump2_off();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,19 +105,27 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //pump1 ON/OFF
-	  pump1_on();
-	  HAL_Delay(1000);
+	  if(HAL_GetTick() - last_tick >= 1000) {
+		  last_tick = HAL_GetTick();
 
-	  pump1_off();
-	  HAL_Delay(1000);
+		  if(step == 0) {
+			  pump1_on();
+		  }
+		  else if(step == 1) {
+			  pump1_off();
+		  }
+		  else if(step == 2) {
+			   pump2_on();
+		  }
+		  else if(step == 3) {
+			  pump2_off();
+		  }
 
-	  //pump2 ON/OFF
-	  pump2_on();
-	  HAL_Delay(1000);
-
-	  pump2_off();
-	  HAL_Delay(1000);
+		  step++;
+		  if(step >= 4) {
+			  step = 0;
+		  }
+	  }
   }
   /* USER CODE END 3 */
 }
