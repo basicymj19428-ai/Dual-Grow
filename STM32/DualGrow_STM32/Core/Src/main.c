@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "pump1.h"
 #include "pump2.h"
+#include "fan.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,6 +97,7 @@ int main(void)
 
   pump1_off();
   pump2_off();
+  fan_off();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,24 +107,42 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if(HAL_GetTick() - last_tick >= 1000) {
+//	  //pump test code
+//	  if(HAL_GetTick() - last_tick >= 1000) {
+//		  last_tick = HAL_GetTick();
+//
+//		  if(step == 0) {
+//			  pump1_on();
+//		  }
+//		  else if(step == 1) {
+//			  pump1_off();
+//		  }
+//		  else if(step == 2) {
+//			   pump2_on();
+//		  }
+//		  else if(step == 3) {
+//			  pump2_off();
+//		  }
+//
+//		  step++;
+//		  if(step >= 4) {
+//			  step = 0;
+//		  }
+//	  }
+	  //fan test code
+	  if(HAL_GetTick() - last_tick >= 3000) {
 		  last_tick = HAL_GetTick();
 
 		  if(step == 0) {
-			  pump1_on();
+			  fan_on();
 		  }
 		  else if(step == 1) {
-			  pump1_off();
-		  }
-		  else if(step == 2) {
-			   pump2_on();
-		  }
-		  else if(step == 3) {
-			  pump2_off();
+			  fan_off();
 		  }
 
 		  step++;
-		  if(step >= 4) {
+
+		  if(step >= 2) {
 			  step = 0;
 		  }
 	  }
@@ -233,6 +253,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, PUMP1_Pin|PUMP2_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(FAN_GPIO_Port, FAN_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -246,8 +269,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PUMP1_Pin PUMP2_Pin */
-  GPIO_InitStruct.Pin = PUMP1_Pin|PUMP2_Pin;
+  /*Configure GPIO pins : PUMP1_Pin PUMP2_Pin FAN_Pin */
+  GPIO_InitStruct.Pin = PUMP1_Pin|PUMP2_Pin|FAN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

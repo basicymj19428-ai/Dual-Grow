@@ -69,6 +69,8 @@ void Error_Handler(void);
 #define PUMP1_GPIO_Port GPIOB
 #define PUMP2_Pin GPIO_PIN_1
 #define PUMP2_GPIO_Port GPIOB
+#define FAN_Pin GPIO_PIN_2
+#define FAN_GPIO_Port GPIOB
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

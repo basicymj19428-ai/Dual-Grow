@@ -1,3 +1,4 @@
+"./Core/Src/fan.o"
 "./Core/Src/main.o"
 "./Core/Src/pump1.o"
 "./Core/Src/pump2.o"
