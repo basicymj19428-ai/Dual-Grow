@@ -71,6 +71,8 @@ void Error_Handler(void);
 #define PUMP2_GPIO_Port GPIOB
 #define FAN_Pin GPIO_PIN_2
 #define FAN_GPIO_Port GPIOB
+#define LED_Pin GPIO_PIN_10
+#define LED_GPIO_Port GPIOB
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

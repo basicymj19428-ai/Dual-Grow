@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -24,6 +25,7 @@
 #include "pump1.h"
 #include "pump2.h"
 #include "fan.h"
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,6 +44,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -52,13 +56,19 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int _write(int file, char *str, int len)
+{
+	(void)file;
+	HAL_UART_Transmit(&huart2, (uint8_t *)str, (uint16_t)len, HAL_MAX_DELAY);
+	return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -91,6 +101,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   uint8_t step = 0;
   uint32_t last_tick = HAL_GetTick();
@@ -98,6 +109,8 @@ int main(void)
   pump1_off();
   pump2_off();
   fan_off();
+  led_off();
+  printf("DualGrow start\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -129,17 +142,53 @@ int main(void)
 //			  step = 0;
 //		  }
 //	  }
-	  //fan test code
+//	  //fan test code
+//	  if(HAL_GetTick() - last_tick >= 3000) {
+//		  last_tick = HAL_GetTick();
+//
+//		  if(step == 0) {
+//			  fan_on();
+//		  }
+//		  else if(step == 1) {
+//			  fan_off();
+//		  }
+//
+//		  step++;
+//
+//		  if(step >= 2) {
+//			  step = 0;
+//		  }
+//	  }
+
+//	  //led test
+//	  if(HAL_GetTick() - last_tick >= 3000) {
+//		  last_tick = HAL_GetTick();
+//
+//		  if(step == 0) {
+//			  led_on();
+//		  }
+//		  else if (step == 1) {
+//			  led_off();
+//		  }
+//		  step++;
+//
+//		  if(step > 2) {
+//			  step = 0;
+//		  }
+//	  }
+
+	  //UART test
 	  if(HAL_GetTick() - last_tick >= 3000) {
 		  last_tick = HAL_GetTick();
 
 		  if(step == 0) {
-			  fan_on();
+			  led_on();
+			  printf("led on\r\n");
 		  }
-		  else if(step == 1) {
-			  fan_off();
+		  else if (step == 1) {
+			  led_off();
+			  printf("led off\r\n");
 		  }
-
 		  step++;
 
 		  if(step >= 2) {
@@ -197,6 +246,58 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_84CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -251,10 +352,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, PUMP1_Pin|PUMP2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, PUMP1_Pin|PUMP2_Pin|FAN_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(FAN_GPIO_Port, FAN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -269,8 +370,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PUMP1_Pin PUMP2_Pin FAN_Pin */
-  GPIO_InitStruct.Pin = PUMP1_Pin|PUMP2_Pin|FAN_Pin;
+  /*Configure GPIO pins : PUMP1_Pin PUMP2_Pin FAN_Pin LED_Pin */
+  GPIO_InitStruct.Pin = PUMP1_Pin|PUMP2_Pin|FAN_Pin|LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
