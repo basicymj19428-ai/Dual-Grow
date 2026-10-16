@@ -26,6 +26,7 @@
 #include "pump2.h"
 #include "fan.h"
 #include "led.h"
+#include "soil.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -177,23 +178,30 @@ int main(void)
 //		  }
 //	  }
 
-	  //UART test
-	  if(HAL_GetTick() - last_tick >= 3000) {
+//	  //UART test
+//	  if(HAL_GetTick() - last_tick >= 3000) {
+//		  last_tick = HAL_GetTick();
+//
+//		  if(step == 0) {
+//			  led_on();
+//			  printf("led on\r\n");
+//		  }
+//		  else if (step == 1) {
+//			  led_off();
+//			  printf("led off\r\n");
+//		  }
+//		  step++;
+//
+//		  if(step >= 2) {
+//			  step = 0;
+//		  }
+//	  }
+
+	  //soil test
+	  if(HAL_GetTick() - last_tick >= 1000) {
 		  last_tick = HAL_GetTick();
 
-		  if(step == 0) {
-			  led_on();
-			  printf("led on\r\n");
-		  }
-		  else if (step == 1) {
-			  led_off();
-			  printf("led off\r\n");
-		  }
-		  step++;
-
-		  if(step >= 2) {
-			  step = 0;
-		  }
+		  printf("soil raw = %u\r\n", soil_read_raw());
 	  }
   }
   /* USER CODE END 3 */
