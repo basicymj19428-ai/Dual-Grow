@@ -17,8 +17,8 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <stdio.h>
 #include "main.h"
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -27,6 +27,7 @@
 #include "fan.h"
 #include "led.h"
 #include "soil.h"
+#include  "waterlevel.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -197,11 +198,18 @@ int main(void)
 //		  }
 //	  }
 
-	  //soil test
+//	  //soil test
+//	  if(HAL_GetTick() - last_tick >= 1000) {
+//		  last_tick = HAL_GetTick();
+//
+//		  printf("soil raw = %u\r\n", soil_read_raw());
+//	  }
+
+	  //waterlevel test
 	  if(HAL_GetTick() - last_tick >= 1000) {
 		  last_tick = HAL_GetTick();
 
-		  printf("soil raw = %u\r\n", soil_read_raw());
+		  printf("soil = %u, water = %u\r\n", soil_read_raw(), waterlevel_read_raw());
 	  }
   }
   /* USER CODE END 3 */
