@@ -1,0 +1,2 @@
+../Core/Src/pump2.c:10:6:pump2_on	0	static
+../Core/Src/pump2.c:16:6:pump2_off	0	static

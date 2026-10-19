@@ -1,0 +1,2 @@
+../Core/Src/fan.c:10:6:fan_on	1
+../Core/Src/fan.c:15:6:fan_off	1

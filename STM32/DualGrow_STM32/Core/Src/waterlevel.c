@@ -10,5 +10,5 @@
 
 uint16_t waterlevel_read_raw(void)
 {
-	return adc_read_channel(ADC_CHANNEL_1);  //PA1
+    return adc_read_channel(ADC_CHANNEL_1);   //PA1
 }

@@ -27,7 +27,7 @@
 #include "fan.h"
 #include "led.h"
 #include "soil.h"
-#include  "waterlevel.h"
+#include "waterlevel.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,8 +105,10 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t step = 0;
-  uint32_t last_tick = HAL_GetTick();
+  uint8_t step = 0U;
+  uint32_t last_step_tick = HAL_GetTick();
+  uint32_t last_print_tick = HAL_GetTick();
+//  uint32_t last_tick = HAL_GetTick();
 
   pump1_off();
   pump2_off();
@@ -205,10 +207,39 @@ int main(void)
 //		  printf("soil raw = %u\r\n", soil_read_raw());
 //	  }
 
-	  //waterlevel test
-	  if(HAL_GetTick() - last_tick >= 1000) {
-		  last_tick = HAL_GetTick();
+//	  //waterlevel test
+//	  if(HAL_GetTick() - last_tick >= 1000) {
+//		  last_tick = HAL_GetTick();
+//
+//		  printf("soil = %u, water = %u\r\n", soil_read_raw(), waterlevel_read_raw());
+//	  }
 
+	  //complex test
+	  uint32_t now = HAL_GetTick();
+
+	  if((now - last_step_tick) >= 2000U) {
+		  last_step_tick = now;
+
+		  switch(step) {
+		  case 0U: pump1_on(); printf("pump1 ON\r\n"); break;
+		  case 1U: pump1_off(); printf("pump1 OFF\r\n"); break;
+		  case 2U: pump2_on(); printf("pump2 ON\r\n"); break;
+		  case 3U: pump2_off(); printf("pump2 OFF\r\n"); break;
+		  case 4U: fan_on(); printf("fan ON\r\n"); break;
+		  case 5U: fan_off(); printf("fan OFF\r\n"); break;
+		  case 6U: led_on(); printf("led ON\r\n"); break;
+		  case 7U: led_off(); printf("led OFF\r\n"); break;
+		  default: break;
+		  }
+
+		  step++;
+		  if(step >= 8U) {
+			  step = 0U;
+		  }
+	  }
+
+	  if((now - last_print_tick) >= 1000U) {
+		  last_print_tick = now;
 		  printf("soil = %u, water = %u\r\n", soil_read_raw(), waterlevel_read_raw());
 	  }
   }
