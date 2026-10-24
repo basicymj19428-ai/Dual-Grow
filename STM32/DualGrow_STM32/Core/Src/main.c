@@ -52,7 +52,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint8_t rx_byte = 0U;  //받을 글자 1개를 담는 곳
+volatile uint8_t rx_flag = 0U;  //새 글자가 왔다는 표시
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,6 +119,8 @@ int main(void)
   fan_off();
   led_off();
   printf("DualGrow start\r\n");
+  HAL_UART_Transmit_IT(&huart1, &rx_byte, 1U);  //첫 글자 받을 준비
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -246,14 +249,30 @@ int main(void)
 //		  printf("soil = %u, water = %u\r\n", soil_read_raw(), waterlevel_read_raw());
 //	  }
 
-	  //rpi-stm32 uart test
-	  static uint32_t last_uart_tick = 0U;
-	  uint32_t now = HAL_GetTick();
+//	  //stm32 -> rpi uart test
+//	  static uint32_t last_uart_tick = 0U;
+//	  uint32_t now = HAL_GetTick();
+//
+//	  if((now - last_uart_tick) >= 1000U) {
+//		  last_uart_tick = now;
+//		  const uint8_t msg[] = "hello from STM32\r\n";
+//		  HAL_UART_Transmit(&huart1, msg, (uint16_t)(sizeof(msg) - 1U), 100U);
+//	  }
 
-	  if((now - last_uart_tick) >= 1000U) {
-		  last_uart_tick = now;
-		  const uint8_t msg[] = "hello from STM32\r\n";
-		  HAL_UART_Transmit(&huart1, msg, (uint16_t)(sizeof(msg) - 1U), 100U);
+	  //rpi -> stm32 test
+	  if(rx_flag != 0U) {
+		  rx_flag = 0U;
+		  printf("%rx : %c (ox%02x)\r\n", rx_byte, rx_byte);
+
+		  if(rx_byte == (uint8_t)'1') {
+			  led_on();
+		  }
+		  else if (rx_byte == (uint8_t) '0') {
+			  led_off();
+		  }
+		  else {
+			  //그외에는 무시
+		  }
 	  }
   }
   /* USER CODE END 3 */
@@ -476,7 +495,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart -> Instance == USART1) {
+		rx_flag = 1U;
+		HAL_UART_Receive_IT(&huart1, &rx_byte, 1U);  //다음 글자 받을 준비
+	}
+}
 /* USER CODE END 4 */
 
 /**
